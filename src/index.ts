@@ -443,8 +443,8 @@ function showStatistics(): void {
 
 Total Students  : ${statistics.totalStudents}
 Average Marks   : ${statistics.averageMarks}
-Highest Marks   : ${statistics.highestMarks ?? "N/A"}
-Lowest Marks    : ${statistics.lowestMarks ?? "N/A"}
+// Highest Marks   : ${statistics.highestMarks ?? "N/A"}
+// Lowest Marks    : ${statistics.lowestMarks ?? "N/A"}
 Passed Students : ${statistics.passedStudents}
 Failed Students : ${statistics.failedStudents}
 
