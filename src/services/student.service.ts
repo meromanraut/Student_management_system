@@ -7,13 +7,13 @@ import {
     isValidText
 } from "../utils/validation";
 
-
 export class StudentService {
 
     private students: Student[] = [];
 
     private nextId: number = 1;
 
+    private nextId: number = 1;
 
     // CREATE
     addStudent(data: Omit<Student, "id">): Student {
@@ -79,6 +79,8 @@ export class StudentService {
         return newStudent;
     }
 
+      
+        this.nextId++;
 
     // READ ALL
     getAllStudents(): Student[] {
