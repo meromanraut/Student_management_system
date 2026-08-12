@@ -1,4 +1,3 @@
-
 import { Student } from "../models/student";
 
 import {
@@ -8,49 +7,60 @@ import {
     isValidText
 } from "../utils/validation";
 
-
 export class StudentService {
 
     private students: Student[] = [];
 
     private nextId: number = 1;
 
+    private nextId: number = 1;
 
+    // CREATE
     addStudent(data: Omit<Student, "id">): Student {
 
+        // Validate name
         if (!isValidText(data.name)) {
             throw new Error("Student name is required.");
         }
+
+        // Validate email
         if (!isValidEmail(data.email)) {
             throw new Error("Invalid email address.");
         }
+
+        // Check duplicate email
         const emailExists = this.students.some(
             student =>
                 student.email.toLowerCase() ===
                 data.email.toLowerCase()
         );
+
         if (emailExists) {
-            throw new Error("A student with this email already exists.");
+            throw new Error(
+                "A student with this email already exists."
+            );
         }
-     
+
+        // Validate age
         if (!isValidAge(data.age)) {
             throw new Error(
                 "Age must be a positive whole number between 1 and 120."
             );
         }
 
+        // Validate course
         if (!isValidText(data.course)) {
             throw new Error("Course is required.");
         }
 
-
- 
+        // Validate marks
         if (!isValidMarks(data.marks)) {
-            throw new Error("Marks must be between 0 and 100.");
+            throw new Error(
+                "Marks must be between 0 and 100."
+            );
         }
 
-
-
+        // Create student
         const newStudent: Student = {
             id: this.nextId,
             name: data.name.trim(),
@@ -60,142 +70,148 @@ export class StudentService {
             marks: data.marks
         };
 
-
-      
+        // Store student in memory
         this.students.push(newStudent);
 
-
-      
+        // Prepare next unique ID
         this.nextId++;
-
 
         return newStudent;
     }
 
-getAllStudents(): Student[] {
-    return this.students;
-}
+      
+        this.nextId++;
 
-
-findStudentById(id: number): Student | undefined {
-    return this.students.find(
-        student => student.id === id
-    );
-}
-
-
-updateStudent(
-    id: number,
-    updates: Partial<Omit<Student, "id">>
-): Student {
-
-    // Find student
-    const student = this.students.find(
-        student => student.id === id
-    );
-
-    if (!student) {
-        throw new Error(`Student with ID ${id} not found.`);
+    // READ ALL
+    getAllStudents(): Student[] {
+        return this.students;
     }
 
 
-    // Validate name
-    if (updates.name !== undefined) {
+    // READ BY ID
+    findStudentById(id: number): Student | undefined {
 
-        if (!isValidText(updates.name)) {
-            throw new Error("Student name cannot be empty.");
-        }
-
-        student.name = updates.name.trim();
-    }
-
-
-    // Validate email
-    if (updates.email !== undefined) {
-
-        if (!isValidEmail(updates.email)) {
-            throw new Error("Invalid email address.");
-        }
-
-        const newEmail = updates.email.toLowerCase();
-
-        const emailExists = this.students.some(
-            otherStudent =>
-                otherStudent.id !== id &&
-                otherStudent.email.toLowerCase() === newEmail
-        );
-
-        if (emailExists) {
-            throw new Error(
-                "Another student already uses this email."
-            );
-        }
-
-        student.email = updates.email.trim();
-    }
-
-
-    // Validate age
-    if (updates.age !== undefined) {
-
-        if (!isValidAge(updates.age)) {
-            throw new Error(
-                "Age must be between 1 and 120."
-            );
-        }
-
-        student.age = updates.age;
-    }
-
-
-    // Validate course
-    if (updates.course !== undefined) {
-
-        if (!isValidText(updates.course)) {
-            throw new Error("Course cannot be empty.");
-        }
-
-        student.course = updates.course.trim();
-    }
-
-
-    // Validate marks
-    if (updates.marks !== undefined) {
-
-        if (!isValidMarks(updates.marks)) {
-            throw new Error(
-                "Marks must be between 0 and 100."
-            );
-        }
-
-        student.marks = updates.marks;
-    }
-
-
-    return student;
-}
-
-
-deleteStudent(id: number): Student {
-
-    const index = this.students.findIndex(
-        student => student.id === id
-    );
-
-    if (index === -1) {
-        throw new Error(
-            `Student with ID ${id} not found.`
+        return this.students.find(
+            student => student.id === id
         );
     }
 
-    const deletedStudents = this.students.splice(index, 1);
 
-    const deletedStudent = deletedStudents[0];
+    // UPDATE
+    updateStudent(
+        id: number,
+        data: Partial<Omit<Student, "id">>
+    ): Student {
 
-    if (!deletedStudent) {
-        throw new Error("Unable to delete student.");
+        const student = this.findStudentById(id);
+
+        if (!student) {
+            throw new Error(
+                `Student with ID ${id} not found.`
+            );
+        }
+
+
+        // Update name
+        if (data.name !== undefined) {
+
+            if (!isValidText(data.name)) {
+                throw new Error(
+                    "Student name is required."
+                );
+            }
+
+            student.name = data.name.trim();
+        }
+
+
+        // Update email
+        if (data.email !== undefined) {
+
+            if (!isValidEmail(data.email)) {
+                throw new Error(
+                    "Invalid email address."
+                );
+            }
+
+            const normalizedEmail =
+                data.email.trim().toLowerCase();
+
+            const emailExists = this.students.some(
+                otherStudent =>
+                    otherStudent.id !== id &&
+                    otherStudent.email
+                        .toLowerCase() === normalizedEmail
+            );
+
+            if (emailExists) {
+                throw new Error(
+                    "A student with this email already exists."
+                );
+            }
+
+            student.email = data.email.trim();
+        }
+
+
+        // Update age
+        if (data.age !== undefined) {
+
+            if (!isValidAge(data.age)) {
+                throw new Error(
+                    "Age must be a positive whole number between 1 and 120."
+                );
+            }
+
+            student.age = data.age;
+        }
+
+
+        // Update course
+        if (data.course !== undefined) {
+
+            if (!isValidText(data.course)) {
+                throw new Error(
+                    "Course is required."
+                );
+            }
+
+            student.course = data.course.trim();
+        }
+
+
+        // Update marks
+        if (data.marks !== undefined) {
+
+            if (!isValidMarks(data.marks)) {
+                throw new Error(
+                    "Marks must be between 0 and 100."
+                );
+            }
+
+            student.marks = data.marks;
+        }
+
+
+        return student;
     }
 
-    return deletedStudent;
-}
+
+    // DELETE
+    deleteStudent(id: number): boolean {
+
+        const index = this.students.findIndex(
+            student => student.id === id
+        );
+
+        if (index === -1) {
+            throw new Error(
+                `Student with ID ${id} not found.`
+            );
+        }
+
+        this.students.splice(index, 1);
+
+        return true;
+    }
 }
